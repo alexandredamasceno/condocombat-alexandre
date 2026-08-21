@@ -2,12 +2,15 @@ resource "render_web_service" "backend" {
   name        = "condocombat-backend"
   plan        = "free"
   region      = "oregon"
-  runtime     = "docker"
-  image_url   = "${var.dockerhub_username}/condocombat-backend:latest"
-  owner_id    = var.render_owner_id
+  runtime_source = {
+    image = {
+      image_url = "docker.io/${var.dockerhub_username}/condocombat-backend:latest"
+    }
+  }
 
+ 
   env_vars = {
-    DATABASE_URL        = "postgresql://postgres:${var.supabase_db_password}@db.${supabase_project.db_condocombat.id}.supabase.co:5432/postgres"
-    BACKEND_SECRET_KEY  = var.backend_secret_key
+    DATABASE_URL       = { value = "postgresql://postgres:${var.supabase_db_password}@db.${supabase_project.db_condocombat.id}.supabase.co:5432/postgres" }
+    BACKEND_SECRET_KEY = { value = var.backend_secret_key }
   }
 }
