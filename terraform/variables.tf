@@ -3,6 +3,10 @@ variable "dockerhub_username" {
   description = "Usuário do DockerHub onde as imagens foram publicadas no CI (Desafio 2)"
 }
 
+variable "DOCKERHUB_TOKEN" {
+  type        = string
+}
+
 variable "supabase_org_id" {
   type      = string
   sensitive = true
