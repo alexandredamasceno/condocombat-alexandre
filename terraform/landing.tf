@@ -9,6 +9,6 @@ resource "terraform_data" "landing_deploy" {
   ]
 
   provisioner "local-exec" {
-    command = "npx netlify-cli deploy --dir=${path.module}/../landing/dist --prod --auth=${var.netlify_auth_token} --site=${data.netlify_site.landing.id}"
+    command = "npx --yes netlify-cli deploy --dir=${path.module}/../landing/dist --prod --auth=${var.netlify_auth_token} --site=${data.netlify_site.landing.id}"
   }
 }
