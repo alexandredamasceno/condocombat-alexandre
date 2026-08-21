@@ -32,4 +32,5 @@ provider "render" {
 
 provider "netlify" {
   token = var.netlify_auth_token
+  default_team_slug = var.netlify_team_slug
 }

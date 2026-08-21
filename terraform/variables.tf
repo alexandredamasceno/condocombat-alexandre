@@ -48,3 +48,8 @@ variable "netlify_site_name" {
   description = "Nome do site da Landing Page na Netlify"
   default     = "condocombat-alexandredamasceno-iac"
 }
+
+variable "netlify_team_slug" {
+  type        = string
+  description = "Slug da equipe/conta na Netlify"
+}
