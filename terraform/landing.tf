@@ -1,8 +1,14 @@
-resource "netlify_site" "landing" {
+data "netlify_site" "landing" {
   name = var.netlify_site_name
 }
 
-resource "netlify_site_deploy" "landing_deploy" {
-  site_id     = netlify_site.landing.id
-  dir         = "landing/dist" 
+resource "terraform_data" "landing_deploy" {
+  triggers_replace = [
+    data.netlify_site.landing.id,
+    filesha1("${path.module}/../landing/dist/index.html")
+  ]
+
+  provisioner "local-exec" {
+    command = "npx netlify-cli deploy --dir=${path.module}/../landing/dist --prod --auth=${var.netlify_auth_token} --site=${data.netlify_site.landing.id}"
+  }
 }

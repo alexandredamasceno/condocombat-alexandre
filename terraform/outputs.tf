@@ -7,11 +7,10 @@ output "frontend_url" {
 }
 
 output "landing_page_url" {
-  value = netlify_site.landing.ssl_url
+  value = "https://${var.netlify_site_name}.netlify.app"
 }
 
-
 output "db_connection_string" {
-  value     = supabase_project.db_condocombat.database_url
+  value     = "postgresql://postgres:${var.supabase_db_password}@db.${supabase_project.db_condocombat.id}.supabase.co:5432/postgres"
   sensitive = true # Protege a string de conexão nos logs
 }
