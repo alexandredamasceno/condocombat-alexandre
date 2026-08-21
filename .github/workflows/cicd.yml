@@ -79,6 +79,7 @@ jobs:
       TF_VAR_dockerhub_username:    ${{ secrets.DOCKERHUB_USERNAME }}
       TF_VAR_backend_secret_key:    ${{ secrets.BACKEND_SECRET_KEY }}
       TF_VAR_DOCKERHUB_TOKEN:       ${{ secrets.DOCKERHUB_TOKEN }}
+      TF_VAR_netlify_team_slug:     ${{ secrets.NETLIFY_TEAM_SLUG }}
 
     steps:
       - name: Checkout Code
