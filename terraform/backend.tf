@@ -11,6 +11,6 @@ resource "render_web_service" "backend" {
 
   env_vars = {
     DATABASE_URL       = { value = "postgresql://postgres:${var.supabase_db_password}@db.${supabase_project.db_condocombat.id}.supabase.co:5432/postgres" }
-    BACKEND_SECRET_KEY = { value = var.backend_secret_key }
+    SECRET_KEY = { value = var.backend_secret_key }
   }
 }
