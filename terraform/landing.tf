@@ -5,10 +5,11 @@ data "netlify_site" "landing" {
 resource "terraform_data" "landing_deploy" {
   triggers_replace = [
     data.netlify_site.landing.id,
-    filesha1("${path.module}/landing/dist/index.html")
+    filesha1("${path.module}/../landing/dist/index.html")
   ]
 
   provisioner "local-exec" {
-    command = "npx --yes netlify-cli deploy --dir=${abspath("${path.module}/landing/dist")} --prod --auth=${var.netlify_auth_token} --site=${data.netlify_site.landing.id}"
+    command = "npx --yes netlify-cli deploy --dir=${path.module}/../landing/dist --prod --auth=${var.netlify_auth_token} --site=${data.netlify_site.landing.id}"
   }
 }
+
