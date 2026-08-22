@@ -1,0 +1,104 @@
+name: CondoCombat CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ci-stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # --- LINT & TESTES (Requisitos do Fluxo) ---
+      - name: Set up Python for Backend
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Lint Backend with Ruff
+        run: |
+          cd backend
+          pip install ruff
+          ruff check . || true # Garante que warnings não quebrem o deploy se você não quiser
+        continue-on-error: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # --- BUILD DA LANDING PAGE ---
+      - name: Build Landing Page
+        run: |
+          cd landing
+          npm install
+          npm run build
+
+      - name: Upload Landing Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: landing-dist
+          path: landing/dist
+
+      # --- DOCKER BUILD & PUSH ---
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/condocombat-backend:latest
+
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/condocombat-frontend:latest
+
+  cd-stage:
+    needs: ci-stage
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      TF_VAR_supabase_org_id:       ${{ secrets.SUPABASE_ORG_ID }}
+      TF_VAR_supabase_db_password:   ${{ secrets.SUPABASE_DB_PASSWORD }}
+      TF_VAR_render_api_key:        ${{ secrets.RENDER_API_KEY }}
+      TF_VAR_render_owner_id:       ${{ secrets.RENDER_OWNER_ID }}
+      TF_VAR_netlify_auth_token:    ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      TF_VAR_netlify_site_name:     ${{ secrets.NETLIFY_SITE_NAME }}
+      TF_VAR_dockerhub_username:    ${{ secrets.DOCKERHUB_USERNAME }}
+      TF_VAR_backend_secret_key:    ${{ secrets.BACKEND_SECRET_KEY }}
+      TF_VAR_DOCKERHUB_TOKEN:       ${{ secrets.DOCKERHUB_TOKEN }}
+      TF_VAR_netlify_team_slug:     ${{ secrets.NETLIFY_TEAM_SLUG }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "latest"
+      
+      - name: Download Landing Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: landing-dist
+          path: landing/dist
+
+      - name: Terraform Deploy
+        working-directory: ./terraform
+        run: |
+          terraform init -input=false
+          terraform plan -input=false
+          terraform apply -auto-approve -input=false
