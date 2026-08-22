@@ -11,6 +11,6 @@ output "landing_page_url" {
 }
 
 output "db_connection_string" {
-  value     = "postgresql://postgres:${var.supabase_db_password}@db.${supabase_project.db_condocombat.id}.supabase.co:5432/postgres"
+  value     = "postgresql+asyncpg://postgres.${supabase_project.db_condocombat.id}:${var.supabase_db_password}@aws-0-sa-east-1.pooler.supabase.com:5432/postgres"
   sensitive = true # Protege a string de conexão nos logs
 }

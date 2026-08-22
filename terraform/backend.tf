@@ -11,8 +11,8 @@ resource "render_web_service" "backend" {
   }
 
   env_vars = {
-    PORT         = { value = "8000" }
-    DATABASE_URL = { value = "postgresql+asyncpg://postgres:${var.supabase_db_password}@db.${supabase_project.db_condocombat.id}.supabase.co:5432/postgres" }
-    SECRET_KEY   = { value = var.backend_secret_key }
+   PORT = { value = "8000" }
+   DATABASE_URL = { value = "postgresql+asyncpg://postgres.${supabase_project.db_condocombat.id}:${var.supabase_db_password}@aws-0-sa-east-1.pooler.supabase.com:5432/postgres" }
+   SECRET_KEY   = { value = var.backend_secret_key }
   }
 }
