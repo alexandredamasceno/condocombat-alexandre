@@ -89,6 +89,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "latest"
+
       
       - name: Download Landing Artifact
         uses: actions/download-artifact@v4
@@ -96,9 +97,25 @@ jobs:
           name: landing-dist
           path: landing/dist
 
+      - name: Restaurar Terraform State (cache)
+        uses: actions/cache/restore@v4
+        with:
+          path: terraform/terraform.tfstate
+          key: terraform-state-${{ github.run_id }}
+          restore-keys: |
+            terraform-state-
+
       - name: Terraform Deploy
         working-directory: ./terraform
         run: |
           terraform init -input=false
           terraform plan -input=false
+          terraform apply -auto-approve -input=false
+
+      - name: Salvar Terraform State (cache)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: terraform/terraform.tfstate
+          key: terraform-state-${{ github.run_id }}
           terraform apply -auto-approve -input=false
