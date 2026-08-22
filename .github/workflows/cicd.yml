@@ -90,6 +90,7 @@ jobs:
         with:
           terraform_version: "latest"
 
+      
       - name: Download Landing Artifact
         uses: actions/download-artifact@v4
         with:
@@ -117,3 +118,4 @@ jobs:
         with:
           path: terraform/terraform.tfstate
           key: terraform-state-${{ github.run_id }}
+          terraform apply -auto-approve -input=false
