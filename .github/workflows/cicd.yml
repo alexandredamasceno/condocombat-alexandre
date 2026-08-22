@@ -23,7 +23,7 @@ jobs:
         run: |
           cd backend
           pip install ruff
-          ruff check . || true # Garante que warnings não quebrem o deploy se você não quiser
+          ruff check . || true
         continue-on-error: true
 
       - name: Set up Node.js
@@ -94,7 +94,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: landing-dist
-          path: landing/dist
+          path: landing/dist # 👈 Baixa os arquivos compilados diretamente na pasta correta do Astro
 
       - name: Restaurar Terraform State (cache)
         uses: actions/cache/restore@v4
@@ -107,9 +107,9 @@ jobs:
       - name: Terraform Deploy
         working-directory: ./terraform
         run: |
-          terraform init -input=false
-          terraform plan -input=false
-          terraform apply -auto-approve -input=false
+          terraform init -input-false
+          terraform plan -input-false
+          terraform apply -auto-approve -input-false
 
       - name: Salvar Terraform State (cache)
         if: always()
