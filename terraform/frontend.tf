@@ -1,7 +1,7 @@
 resource "render_web_service" "frontend" {
-  name   = "condocombat-frontend"
-  plan   = "free"
-  region = "oregon"
+  name      = "condocombat-frontend"
+  plan      = "free"
+  region    = "oregon"
 
   runtime_source = {
     image = {
@@ -11,7 +11,11 @@ resource "render_web_service" "frontend" {
   }
 
   env_vars = {
-    PORT                 = { value = "3000" }
-    NEXT_PUBLIC_API_URL  = { value = render_web_service.backend.url }
+    PORT = {
+      value = "3000"
+    }
+    NEXT_PUBLIC_API_URL = {
+      value = local.backend_url
+    }
   }
 }
